@@ -24,7 +24,7 @@ A simple and reusable Python function to interact with the Llama 3 model via the
     This project requires the `requests` library to make HTTP calls.
 
     ```
-    pip install requests
+    pip install -r requirements.txt
     ```
 ### Configuration
 1.  Open the `generate_content.py` file.
