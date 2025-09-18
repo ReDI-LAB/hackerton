@@ -1,13 +1,16 @@
+from dotenv import load_dotenv
 import os
 import requests
 import json
 import re
 
+load_dotenv()
+
 # --- 1. Get your API Key ---
 # You can get a free API key from OpenRouter after creating an account at:
 # https://openrouter.ai/
 # Simply click "Create Account" and then find your API key in your account settings.
-API_KEY = "API_KEY"
+API_KEY = os.getenv("SECRET_KEY")
 
 # The URL for the OpenRouter API endpoint
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
