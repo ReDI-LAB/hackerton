@@ -19,56 +19,51 @@
           <li><a href="#about">About us</a></li>
           <li><a href="#Faqs">FAQS</a></li>
         </ul>
-        
       </div> -->
     </nav>
 
     <!--Main page section-->
     <section class="welcome">
       <h1>Online-Formulare der Stadt Unterschleißheim</h1>
-      <p><span>Sehr geehrter Nutzer</span>,
-        nicht jeder Rechner bietet die gleichen Systemvoraussetzungen. Daher stellen wir Ihnen das gewünschte Formular in unterschiedlichen Formaten zur Verfügung.
+      <p><span>Sehr geehrter Nutzer</span>,</p>
+      <p>hier haben Sie die Möglichkeit, Anträge an die Verwaltung der Stadt Unterschleißheim über ein ausfüllbares PDF-Formular eingereicht und Online zu erfassen und direkt an die zuständigen Stellen zur weiteren Bearbeitung weiterzuleiten.
     </p>
     </section>
-
-    <main>
-    </main>
-  <!-- --green: #0E8D32; /* Dima */
-
-  navbar
-  display: flex;
-  justify-content: center;
-  height: 45px;
-  align-items: center;
-
-  welcome
-  span{
-    font-weight: bold;
-  }
-
-  .btn-start{ -->
+    <!-- <main>
+    </main> -->
     <!--Form section-->
     <section class="form-section">
-      <div id="formIcon" class="form-icon" role="button" tabindex="0" aria-controls="subIcons" aria-expanded="false">📋</div>
-      <div class="form-title">Wohnsitzanmeldung</div>
-      <div id="formStatus" role="status" aria-live="polite"></div>
-      <div id="subIcons" class="sub-icons">
-        <a class="icon" href="https://formulare.landkreis-muenchen.de/cdm/cfs/eject/pdf?MANDANTID=22&FORMID=5774" target="_blank">
-          <div class="circle">📄</div>
-          <span>PDF</span>
-        </a>
-        <div class="icon">
-          <div class="circle">💻</div>
-          <span>Digital</span>
+        <div style="margin-top:20px;">
+            <h3>Geben Sie hier bitte einen Suchbegriff ein (mind. 2 Zeichen).</h2>
+            <div class="search">
+                <input id="search-input" type="text" placeholder="Enter keyword..." />
+                <button id="search-btn">🔍</button>
+            </div>
+            <p id="search-result">
+            </p>
         </div>
-      </div>
-
+        <div class="formular">
+            <div id="formIcon" class="form-icon" role="button" tabindex="0" aria-controls="subIcons" aria-expanded="false">
+                📋 <div class="form-title"></div>
+            </div>
+                <div id="formStatus" role="status" aria-live="polite"></div>
+                <div id="subIcons" class="sub-icons">
+                    <a class="icon" href="https://formulare.landkreis-muenchen.de/cdm/cfs/eject/pdf?MANDANTID=22&FORMID=5774" target="_blank">
+                    <div class="circle">📄</div>
+                    <span>PDF</span>
+                    </a>
+                    <div class="icon">
+                    <div class="circle">💻</div>
+                    <span>Digital</span>
+                    </div>
+                </div>
+        </div>
     </section>
 
     <!-- Start of Chat  -->
     <div id="chat-icon">💬</div>
     <div id="chat-popup">
-        <div id="chat-header">Hallo, your AI assistant</div>
+        <div id="chat-header">Ich bin hier, um Ihnen zu helfen</div>
         <div id="chat-messages"></div>
         <div id="chat-input">
             <input id="messageInput" type="text" placeholder="Type a message...">
@@ -76,8 +71,64 @@
         </div>
     </div>
     <!-- End of Chat  -->
-    
     <script>
+        const formInput = document.getElementById("search-input");
+        const formBtn = document.getElementById("search-btn");
+        const formResult = document.getElementById("search-result");
+
+        const formIcon = document.getElementById("formIcon");
+        const formTitle = formIcon.querySelector(".form-title");
+        const subIcons = document.getElementById("subIcons");
+        const formStatus = document.getElementById("formStatus");
+
+        // make sure it's hidden by default
+        formIcon.style.visibility = "hidden";
+
+        formBtn.onclick = async () => {
+            const query = formInput.value.trim();
+            if (!query) return;
+
+            const res = await fetch("/api/search_form", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query })
+            });
+
+            const data = await res.json();
+
+            if (data.form && !data.form.includes("No matching form")) {
+                formTitle.textContent = data.form;
+                formIcon.style.visibility = "visible"; // show icon
+            } else {
+                formResult.textContent = "Kein passendes Formular gefunden.";
+                formIcon.style.visibility = "hidden"; // hide icon
+                subIcons.classList.remove("visible"); // also close dropdown if open
+                formStatus.textContent = "";
+            }
+        };
+        // --- toggle functionality ---
+        formIcon.addEventListener("click", () => {
+            const isVisible = subIcons.classList.contains("visible");
+            if (isVisible) {
+            subIcons.classList.remove("visible");
+            formIcon.setAttribute("aria-expanded", "false");
+            formStatus.textContent = "Form options hidden";
+            } else {
+            subIcons.classList.add("visible");
+            formIcon.setAttribute("aria-expanded", "true");
+            formStatus.textContent = "Form options available";
+            }
+        });
+
+        // keyboard support
+        formIcon.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            formIcon.click();
+            }
+        });
+    </script>
+    <!-- <script>
       // Form icon toggle functionality
       const formIcon = document.getElementById('formIcon');
       const subIcons = document.getElementById('subIcons');
@@ -103,7 +154,7 @@
           formIcon.click();
         }
       });
-    </script>
+    </script> -->
     <script src="../static/js/chat.js"></script>
   </body>
 </html>
