@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -54,33 +54,32 @@ class ChatRequest(BaseModel):
     question: str
     history: list[dict] = []
 
-# api chat
-@app.post("/api/chat")
-async def chat(req: ChatRequest):
-    messages = req.history + [
-        {"role": "user", "content": req.question}
-    ]
-    answer = generate_content(messages)
-    return {"answer": answer}
+# API chat
+# @app.post("/api/chat")
+# async def chat(req: ChatRequest):
+#     messages = req.history + [
+#         {"role": "user", "content": req.question}
+#     ]
+#     answer = generate_content(messages)
+#     return {"answer": answer}
 
 
 # WS chat
-# @app.websocket("/ws/chat")
-# async def websocket_chat(ws: WebSocket):
-#     await ws.accept()
-#     chat_history = [{"role": "system", "content": "You are a helpful assistant."}]
+@app.websocket("/ws/chat")
+async def websocket_chat(ws: WebSocket):
+    await ws.accept()
+    chat_history = [{"role": "system", "content": "You are a helpful assistant."}]
 
-#     while True:
-#         try:
-#         data = await ws.receive_json()
-#         question = data.get("question", "").strip()
-#         if not question:
-#             continue
+    try:
+        while True:
+            data = await ws.receive_json()
+            question = data.get("question", "").strip()
+            if not question:
+                continue
 
-#         chat_history.append({"role": "user", "content": question})
-#         answer = generate_content(chat_history)
-#         await ws.send_json({"answer": answer})
-#         chat_history.append({"role": "assistant", "content": answer})
-#     except WebSocketDisconnect:
-#         break
-        
+            chat_history.append({"role": "user", "content": question})
+            answer = generate_content(chat_history)
+            await ws.send_json({"answer": answer})
+            chat_history.append({"role": "assistant", "content": answer})
+    except WebSocketDisconnect:
+        print("Client disconnected")
