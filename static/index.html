@@ -46,7 +46,7 @@
             <div id="formIcon" class="form-icon" role="button" tabindex="0" aria-controls="subIcons" aria-expanded="false">
                 📋 <div class="form-title"></div>
             </div>
-                <div id="formStatus" role="status" aria-live="polite"></div>
+                <!-- <div id="formStatus" role="status" aria-live="polite"></div> -->
                 <div id="subIcons" class="sub-icons">
                     <a class="icon" href="https://formulare.landkreis-muenchen.de/cdm/cfs/eject/pdf?MANDANTID=22&FORMID=5774" target="_blank">
                     <div class="circle">📄</div>
@@ -76,14 +76,6 @@
         const formBtn = document.getElementById("search-btn");
         const formResult = document.getElementById("search-result");
 
-        const formIcon = document.getElementById("formIcon");
-        const formTitle = formIcon.querySelector(".form-title");
-        const subIcons = document.getElementById("subIcons");
-        const formStatus = document.getElementById("formStatus");
-
-        // make sure it's hidden by default
-        formIcon.style.visibility = "hidden";
-
         formBtn.onclick = async () => {
             const query = formInput.value.trim();
             if (!query) return;
@@ -96,65 +88,81 @@
 
             const data = await res.json();
 
-            if (data.form && !data.form.includes("No matching form")) {
-                formTitle.textContent = data.form;
-                formIcon.style.visibility = "visible"; // show icon
+            // clear previous results
+            formResult.innerHTML = "";
+
+            if (data.forms && data.forms.length > 0) {
+                data.forms.forEach(f => {
+                    // create wrapper
+                    const wrapper = document.createElement("div");
+                    wrapper.classList.add("formular");
+
+                    // formIcon block
+                    const formIcon = document.createElement("div");
+                    formIcon.classList.add("form-icon");
+                    formIcon.setAttribute("role", "button");
+                    formIcon.setAttribute("tabindex", "0");
+                    formIcon.setAttribute("aria-controls", "subIcons");
+                    formIcon.setAttribute("aria-expanded", "false");
+                    formIcon.style.visibility = "visible";
+                    formIcon.innerHTML = `📋 <div class="form-title">${f}</div>`;
+
+                    // formStatus
+                    const formStatus = document.createElement("div");
+                    formStatus.id = "formStatus";
+                    formStatus.setAttribute("role", "status");
+                    formStatus.setAttribute("aria-live", "polite");
+
+                    // subIcons
+                    const subIcons = document.createElement("div");
+                    subIcons.classList.add("sub-icons");
+                    subIcons.innerHTML = `
+                        <a class="icon" href="https://formulare.landkreis-muenchen.de/cdm/cfs/eject/pdf?MANDANTID=22&FORMID=5774" target="_blank">
+                            <div class="circle">📄</div>
+                            <span>PDF</span>
+                        </a>
+                        <div class="icon">
+                            <div class="circle">💻</div>
+                            <span>Digital</span>
+                        </div>
+                    `;
+
+                    // toggle logic
+                    formIcon.addEventListener("click", () => {
+                        const isVisible = subIcons.classList.contains("visible");
+                        if (isVisible) {
+                            subIcons.classList.remove("visible");
+                            formIcon.setAttribute("aria-expanded", "false");
+                            // formStatus.textContent = "Form options hidden";
+                        } else {
+                            subIcons.classList.add("visible");
+                            formIcon.setAttribute("aria-expanded", "true");
+                            // formStatus.textContent = "Form options available";
+                        }
+                    });
+
+                    // keyboard support
+                    formIcon.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            formIcon.click();
+                        }
+                    });
+
+                    // append to wrapper
+                    wrapper.appendChild(formIcon);
+                    wrapper.appendChild(formStatus);
+                    wrapper.appendChild(subIcons);
+
+                    // append to result section
+                    formResult.appendChild(wrapper);
+                });
             } else {
                 formResult.textContent = "Kein passendes Formular gefunden.";
-                formIcon.style.visibility = "hidden"; // hide icon
-                subIcons.classList.remove("visible"); // also close dropdown if open
-                formStatus.textContent = "";
             }
         };
-        // --- toggle functionality ---
-        formIcon.addEventListener("click", () => {
-            const isVisible = subIcons.classList.contains("visible");
-            if (isVisible) {
-            subIcons.classList.remove("visible");
-            formIcon.setAttribute("aria-expanded", "false");
-            formStatus.textContent = "Form options hidden";
-            } else {
-            subIcons.classList.add("visible");
-            formIcon.setAttribute("aria-expanded", "true");
-            formStatus.textContent = "Form options available";
-            }
-        });
+</script>
 
-        // keyboard support
-        formIcon.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            formIcon.click();
-            }
-        });
-    </script>
-    <!-- <script>
-      // Form icon toggle functionality
-      const formIcon = document.getElementById('formIcon');
-      const subIcons = document.getElementById('subIcons');
-      const formStatus = document.getElementById('formStatus');
-      
-      formIcon.addEventListener('click', () => {
-        const isVisible = subIcons.classList.contains('visible');
-        if (isVisible) {
-          subIcons.classList.remove('visible');
-          formIcon.setAttribute('aria-expanded', 'false');
-          formStatus.textContent = 'Form options hidden';
-        } else {
-          subIcons.classList.add('visible');
-          formIcon.setAttribute('aria-expanded', 'true');
-          formStatus.textContent = 'Form options available';
-        }
-      });
-      
-      // Add keyboard support
-      formIcon.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          formIcon.click();
-        }
-      });
-    </script> -->
     <script src="../static/js/chat.js"></script>
   </body>
 </html>
