@@ -55,7 +55,10 @@ chatIcon.onclick = () => {
 };
 
 function connectSocket() {
-    chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat`);
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    chatSocket = new WebSocket(`${protocol}://${window.location.host}/ws/chat`);
+
+    // chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat`);
 
     chatSocket.onopen = () => {
         console.log("WebSocket connected");
@@ -68,7 +71,7 @@ function connectSocket() {
 
     chatSocket.onclose = () => {
         console.log("WebSocket closed, reconnecting in 1s...");
-        setTimeout(connectSocket, 1000);
+        setTimeout(connectSocket, 100000);
     };
 
     chatSocket.onerror = (err) => {
