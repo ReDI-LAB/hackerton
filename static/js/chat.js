@@ -8,7 +8,7 @@ chatIcon.onclick = () => {
     chatPopup.style.display = chatPopup.style.display === "flex" ? "none" : "flex";
 };
 
-let chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat`);
+let chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat`);
 
 chatSocket.onmessage = (event) => {
     const data = JSON.parse(event.data);
