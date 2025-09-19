@@ -80,3 +80,5 @@ async def websocket_chat(ws: WebSocket):
         answer = generate_content(chat_history)
         await ws.send_json({"answer": answer})
         chat_history.append({"role": "assistant", "content": answer})
+        await ws.close()
+        
