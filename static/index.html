@@ -4,45 +4,61 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>KI Form</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="shortcut icon" href="https://www.buergerservice-portal.de/media/2909/unterschleissheim.ico">
+    <link rel="stylesheet" href="/static/style/style.css">
     <link rel="stylesheet" href="/static/style/chat.css">
   </head>
   <body>
+    <a href="/" class=""> 
+                <img class="" src="/static/img/logo.png" alt="" width="152" height="50" aria-hidden="true">    </a>
     <!--Nav bar-->
     <nav class="navbar">
-      <div class="inner">
-        <div class="nav-brand">AI Assistant</div>
+        <div class="nav-brand">Stadt Unterschleißheim</div>
+      <!-- <div class="inner">
         <ul class="nav-links">
           <li><a href="#about">About us</a></li>
           <li><a href="#Faqs">FAQS</a></li>
-      </div>
-      
-      </ul>
+        </ul>
+        
+      </div> -->
     </nav>
 
     <!--Main page section-->
     <section class="welcome">
-      <h1>Hallo, your AI assistant</h1>
-      <p>I am here to answer all your questions</p>
+      <h1>Online-Formulare der Stadt Unterschleißheim</h1>
+      <p><span>Sehr geehrter Nutzer</span>,
+        nicht jeder Rechner bietet die gleichen Systemvoraussetzungen. Daher stellen wir Ihnen das gewünschte Formular in unterschiedlichen Formaten zur Verfügung.
+    </p>
     </section>
 
     <main>
-
     </main>
+  <!-- --green: #0E8D32; /* Dima */
 
+  navbar
+  display: flex;
+  justify-content: center;
+  height: 45px;
+  align-items: center;
+
+  welcome
+  span{
+    font-weight: bold;
+  }
+
+  .btn-start{ -->
     <!--Form section-->
     <section class="form-section">
-      <div id="formIcon" class="form-icon" role="button" tabindex="0" aria-controls="subIcons" aria-expanded="false"></div> </div>
-      <div class="form-title" class="Form" role="button" tabindex="0" aria-controls="subIcons" aria-expanded="false">Form </div>
+      <div id="formIcon" class="form-icon" role="button" tabindex="0" aria-controls="subIcons" aria-expanded="false">📋</div>
+      <div class="form-title">Wohnsitzanmeldung</div>
       <div id="formStatus" role="status" aria-live="polite"></div>
       <div id="subIcons" class="sub-icons">
-        <a class="icon" href="https://formulare.landkreis-muenchen.de/cdm/cfs/eject/pdf?MANDANTID=22&FORMID=5774" target="_blank"></a>
-        <div class="icon">
-          <div class="circle"></div>
+        <a class="icon" href="https://formulare.landkreis-muenchen.de/cdm/cfs/eject/pdf?MANDANTID=22&FORMID=5774" target="_blank">
+          <div class="circle">📄</div>
           <span>PDF</span>
-        </div>
+        </a>
         <div class="icon">
-          <div class="circle"></div>
+          <div class="circle">💻</div>
           <span>Digital</span>
         </div>
       </div>
@@ -52,7 +68,7 @@
     <!-- Start of Chat  -->
     <div id="chat-icon">💬</div>
     <div id="chat-popup">
-        <div id="chat-header">AI Chat</div>
+        <div id="chat-header">Hallo, your AI assistant</div>
         <div id="chat-messages"></div>
         <div id="chat-input">
             <input id="messageInput" type="text" placeholder="Type a message...">
@@ -62,35 +78,29 @@
     <!-- End of Chat  -->
     
     <script>
-      const form = document.getElementById('simpleForm'); // we don't have simpleForm!!!
-      const statusDiv = document.getElementById('formStatus');
-      const submitBtn = form.querySelector('button[type="submit"]');
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!form.reportValidity){
-            
+      // Form icon toggle functionality
+      const formIcon = document.getElementById('formIcon');
+      const subIcons = document.getElementById('subIcons');
+      const formStatus = document.getElementById('formStatus');
+      
+      formIcon.addEventListener('click', () => {
+        const isVisible = subIcons.classList.contains('visible');
+        if (isVisible) {
+          subIcons.classList.remove('visible');
+          formIcon.setAttribute('aria-expanded', 'false');
+          formStatus.textContent = 'Form options hidden';
+        } else {
+          subIcons.classList.add('visible');
+          formIcon.setAttribute('aria-expanded', 'true');
+          formStatus.textContent = 'Form options available';
         }
-        const data = Object.fromEntries(new FormData(form).entries());
-
-        submitBtn.disabled = true;
-        statusDiv.textContent = 'Submitting';
-
-        try {
-          const res = await fetch('/api/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-          });
-          if (!res.ok) throw new Error('Error in Network');
-          const result = await res.json();
-          statusDiv.className = 'success';
-          form.reset();
-        } catch (err) {
-          console.warn('No backend connection:', err);
-          statusDiv.textContent = 'Demo: form submitted';
-          statusDiv.className = 'success';
-        } finally {
-          submitBtn.disabled = false;
+      });
+      
+      // Add keyboard support
+      formIcon.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          formIcon.click();
         }
       });
     </script>
