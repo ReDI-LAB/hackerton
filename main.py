@@ -10,14 +10,12 @@ from rag import generate_content
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
-# === Dictionary of forms ===
 FORMS = {
     "Wohnsitzanmeldung": "Anmeldung bei der Meldebehörde",
     "Wohnsitzabmeldung": "Abmeldung bei der Meldebehörde",
     "Wohnsitzumzugsmeldung": "Anmeldung bei der Meldebehörde - Umzugsmeldung",
     "kindergeld": "Kindergeld Formular",
-    "Linderzuschlag": "Kinderzuschlag Formular",
+    "Kinderzuschlag": "Kinderzuschlag Formular",
     "GewA 1 - Gewerbe-Anmeldung": "GewA 1 - Gewerbe-Anmeldung",
     "GewA 2 - Gewerbe-Ummeldung": "GewA 2 - Gewerbe-Ummeldung",
     "GewA 3 - Gewerbe-Abmeldung": "GewA 3 - Gewerbe-Abmeldung",
@@ -78,14 +76,7 @@ async def websocket_chat(ws: WebSocket):
         if not question:
             continue
 
-        # Add user message
         chat_history.append({"role": "user", "content": question})
-
-        # Generate response (currently full response at once)
         answer = generate_content(chat_history)
-
-        # Send back to client
         await ws.send_json({"answer": answer})
-
-        # Append assistant message to history
         chat_history.append({"role": "assistant", "content": answer})
