@@ -8,9 +8,12 @@ chatIcon.onclick = () => {
     chatPopup.style.display = chatPopup.style.display === "flex" ? "none" : "flex";
 };
 
-let chatHistory = [
-    { role: "system", content: "You are a helpful assistant." }
-];
+let chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat`);
+
+chatSocket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    addMessage(data.answer, "bot");
+};
 
 function addMessage(text, sender) {
     const msg = document.createElement("div");
@@ -20,23 +23,12 @@ function addMessage(text, sender) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-sendBtn.onclick = async () => {
+sendBtn.onclick = () => {
     const userMsg = input.value.trim();
     if (!userMsg) return;
     addMessage(userMsg, "user");
     input.value = "";
-
-    chatHistory.push({ role: "user", content: userMsg });
-
-    const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ question: userMsg, history: chatHistory })
-    });
-    const data = await res.json();
-    addMessage(data.answer, "bot");
-
-    chatHistory.push({ role: "assistant", content: data.answer });
+    chatSocket.send(JSON.stringify({ question: userMsg }));
 };
 
 input.addEventListener("keypress", (e) => {
