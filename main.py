@@ -71,14 +71,16 @@ async def websocket_chat(ws: WebSocket):
     chat_history = [{"role": "system", "content": "You are a helpful assistant."}]
 
     while True:
-        data = await ws.receive_json()
-        question = data.get("question", "").strip()
-        if not question:
-            continue
+        try:
+            data = await ws.receive_json()
+            question = data.get("question", "").strip()
+            if not question:
+                continue
 
-        chat_history.append({"role": "user", "content": question})
-        answer = generate_content(chat_history)
-        await ws.send_json({"answer": answer})
-        chat_history.append({"role": "assistant", "content": answer})
-        await ws.close()
+            chat_history.append({"role": "user", "content": question})
+            answer = generate_content(chat_history)
+            await ws.send_json({"answer": answer})
+            chat_history.append({"role": "assistant", "content": answer})
+        except WebSocketDisconnect:
+            break
         
