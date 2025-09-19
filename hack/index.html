@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KI Form</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <!--Nav bar-->
+    <nav class="navbar">
+      <div class="inner">
+        <div class="nav-brand">AI Assistant</div>
+        <ul class="nav-links">
+          <li><a href="#about">About us</a></li>
+          <li><a href="#Faqs">FAQS</a></li>
+      </div>
+      
+      </ul>
+    </nav>
+
+    <!--Main page section-->
+    <section class="welcome">
+      <h1>Hallo, your AI assistant</h1>
+      <p>I am here to answer all your questions</p>
+    </section>
+
+    <main>
+
+    </main>
+
+    <!--Form section-->
+    <section class="form-section">
+      <div id="formIcon" class="form-icon" role="button" tabindex="0" aria-controls="subIcons" aria-expanded="false">📋</div>
+      <div class="form-title">Form</div>
+      <div id="formStatus" role="status" aria-live="polite"></div>
+      <div id="subIcons" class="sub-icons">
+        <a class="icon" href="https://formulare.landkreis-muenchen.de/cdm/cfs/eject/pdf?MANDANTID=22&FORMID=5774" target="_blank">
+          <div class="circle">📄</div>
+          <span>PDF</span>
+        </a>
+        <div class="icon">
+          <div class="circle">💻</div>
+          <span>Digital</span>
+        </div>
+      </div>
+
+    </section>
+
+    
+    <script>
+      // Form icon toggle functionality
+      const formIcon = document.getElementById('formIcon');
+      const subIcons = document.getElementById('subIcons');
+      const formStatus = document.getElementById('formStatus');
+      
+      formIcon.addEventListener('click', () => {
+        const isVisible = subIcons.classList.contains('visible');
+        if (isVisible) {
+          subIcons.classList.remove('visible');
+          formIcon.setAttribute('aria-expanded', 'false');
+          formStatus.textContent = 'Form options hidden';
+        } else {
+          subIcons.classList.add('visible');
+          formIcon.setAttribute('aria-expanded', 'true');
+          formStatus.textContent = 'Form options available';
+        }
+      });
+      
+      // Add keyboard support
+      formIcon.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          formIcon.click();
+        }
+      });
+    </script>
+  </body>
+
+</html>
