@@ -44,6 +44,7 @@ const input = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
 
 let chatSocket;
+let heartbeatInterval;
 
 chatIcon.onclick = () => {
     chatPopup.style.display = chatPopup.style.display === "flex" ? "none" : "flex";
@@ -58,24 +59,32 @@ function connectSocket() {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     chatSocket = new WebSocket(`${protocol}://${window.location.host}/ws/chat`);
 
-    // chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat`);
-
     chatSocket.onopen = () => {
         console.log("WebSocket connected");
+
+        // start heartbeat (send every 30s)
+        heartbeatInterval = setInterval(() => {
+            if (chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({ type: "ping" }));
+            }
+        }, 30000);
     };
 
     chatSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        if (data.type === "pong") return; // ignore keepalive
         addMessage(data.answer, "bot");
     };
 
     chatSocket.onclose = () => {
         console.log("WebSocket closed, reconnecting in 1s...");
-        setTimeout(connectSocket, 100000);
+        clearInterval(heartbeatInterval);
+        setTimeout(connectSocket, 1000);
     };
 
     chatSocket.onerror = (err) => {
         console.error("WebSocket error:", err);
+        clearInterval(heartbeatInterval);
         chatSocket.close();
     };
 }
