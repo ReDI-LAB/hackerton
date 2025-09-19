@@ -24,7 +24,7 @@
     width: 300px;
     height: 400px;
     background: white;
-    border: 1px solid #ccc;
+    border: none;
     border-radius: 10px;
     display: none;
     flex-direction: column;
@@ -50,12 +50,14 @@
 #chat-input {
     display: flex;
     border-top: 1px solid #ccc;
+    border-radius: 0 0 10px 10px;
 }
 
 #chat-input input {
     flex: 1;
     padding: 8px;
     border: none;
+    border-radius: 0 0 0 10px;
 }
 
 #chat-input button {
@@ -64,6 +66,7 @@
     background: var(--brand); /*#4CAF50;*/
     color: white;
     cursor: pointer;
+    border-radius: 0 0 10px 0;
 }
 
 .msg-user { 
